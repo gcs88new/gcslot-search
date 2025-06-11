@@ -9,7 +9,7 @@ const dummyData = [
     status: "Aktif"
   },
   {
-    title: "GCSlot Palsu",a
+    title: "GCSlot Palsu",
     link: "http://fakegcslot.com",
     reportLink: "https://safebrowsing.google.com/safebrowsing/report_badware/",
     domain: "fakegcslot.com",
