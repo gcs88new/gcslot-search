@@ -1,35 +1,48 @@
-async function searchGCSlot() {
-  const kw = document.getElementById("keyword").value.trim();
-  if (!kw) return alert("Masukkan keyword!");
-  try {
-    const res = await fetch(`/api/search?q=${encodeURIComponent(kw)}`);
-    const data = await res.json();
-    const body = document.getElementById("resultBody");
-    body.innerHTML = "";
-    const list = data.organic_results || [];
-    if (list.length === 0) {
-      body.innerHTML = "<tr><td colspan=7>Tidak ada hasil</td></tr>";
-      return;
-    }
-    list.forEach(item => {
-      const title = item.title||"-",
-            link = item.link||"#",
-            domain = (link.match(/https?:\/\/([^\/]+)/)||[])[1] || "-",
-            laporan = `Situs phishing mirip GCSlot: ${link}`,
-            reportUrl = `https://safebrowsing.google.com/safebrowsing/report_phish/?url=${encodeURIComponent(link)}`;
-      body.insertAdjacentHTML("beforeend", `
-        <tr>
-          <td>${title}</td>
-          <td><a href="${link}" target="_blank">${link}</a></td>
-          <td><a href="${reportUrl}" target="_blank">Laporkan</a></td>
-          <td>${domain}</td>
-          <td>${laporan}</td>
-          <td><input type="checkbox"></td>
-          <td>${new Date().toLocaleDateString("id-ID")}</td>
-        </tr>`);
-    });
-  } catch (e) {
-    console.error(e);
-    alert("Gagal fetch lewat server Vercel.");
+// script.js versi data dummy untuk GCSlot Search
+
+const dummyData = [
+  {
+    title: "GCSlot Resmi",
+    link: "https://gcslot.id",
+    reportLink: "https://safebrowsing.google.com/safebrowsing/report_badware/",
+    domain: "gcslot.id",
+    status: "Aktif"
+  },
+  {
+    title: "GCSlot Palsu",a
+    link: "http://fakegcslot.com",
+    reportLink: "https://safebrowsing.google.com/safebrowsing/report_badware/",
+    domain: "fakegcslot.com",
+    status: "Blokir"
   }
-}
+];
+
+document.querySelector("button").addEventListener("click", () => {
+  const keyword = document.querySelector("input").value.toLowerCase();
+  const results = dummyData.filter(item =>
+    item.title.toLowerCase().includes(keyword) ||
+    item.link.toLowerCase().includes(keyword) ||
+    item.domain.toLowerCase().includes(keyword)
+  );
+
+  const tbody = document.querySelector("table tbody");
+  tbody.innerHTML = "";
+
+  if (results.length > 0) {
+    results.forEach(item => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${item.title}</td>
+        <td><a href="${item.link}" target="_blank">${item.link}</a></td>
+        <td><a href="${item.reportLink}" target="_blank">Laporkan</a></td>
+        <td>${item.domain}</td>
+        <td>${item.status}</td>
+        <td><input type="checkbox" ${item.status === "Aktif" ? "checked" : ""} disabled /></td>
+        <td><button>🗑️</button></td>
+      `;
+      tbody.appendChild(row);
+    });
+  } else {
+    tbody.innerHTML = `<tr><td colspan="7">Tidak ada hasil</td></tr>`;
+  }
+});
